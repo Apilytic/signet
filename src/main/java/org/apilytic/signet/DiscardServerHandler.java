@@ -14,13 +14,9 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		ByteBuf in = (ByteBuf) msg;
-		try {
-			while (in.isReadable()) { // (1)
-				System.out.print((char) in.readByte());
-				System.out.flush();
-			}
-		} finally {
-			in.release();
+		while (in.isReadable()) { // (1)
+			System.out.print((char) in.readByte());
+			System.out.flush();
 		}
 	}
 }

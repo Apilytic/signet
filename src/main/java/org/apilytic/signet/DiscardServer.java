@@ -19,6 +19,9 @@ public class DiscardServer {
 	public void run() throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+		DiscardServerHandler discardServerHandler = new DiscardServerHandler();
+
 		try {
 			ServerBootstrap b = new ServerBootstrap(); // (2)
 			b.group(bossGroup, workerGroup)
@@ -26,7 +29,7 @@ public class DiscardServer {
 					.childHandler(new ChannelInitializer<SocketChannel>() { // (4)
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
-							ch.pipeline().addLast(new DiscardServerHandler());
+							ch.pipeline().addLast(discardServerHandler);
 						}
 					})
 					.option(ChannelOption.SO_BACKLOG, 128)          // (5)
