@@ -3,7 +3,6 @@ package org.apilytic.signet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.util.ReferenceCountUtil;
 
 public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
 	@Override
@@ -21,7 +20,7 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
 				System.out.flush();
 			}
 		} finally {
-			ReferenceCountUtil.release(msg); // (2)
+			in.release();
 		}
 	}
 }
