@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 
@@ -17,8 +18,30 @@ ext.deps = [
 ]
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-engine:' + deps.junitVersion
-    testCompile 'org.junit.jupiter:junit-jupiter-api:' + deps.junitVersion
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + deps.junitVersion
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:' + deps.junitVersion
     compile 'io.reactivex.rxjava2:rxjava:2+'
     compile 'io.netty:netty-all:4+'
 }
+
+test {
+    // Enable JUnit 5 (Gradle 4.6+).
+    useJUnitPlatform()
+
+    // Always run tests, even when nothing changed.
+    dependsOn 'cleanTest'
+
+    // Show test results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
