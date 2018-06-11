@@ -17,27 +17,27 @@ public class Server {
 	}
 
 	public void run() throws Exception {
-		EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 //		DiscardServerHandler serverHandler = new DiscardServerHandler();
 		TimeServerHandler serverHandler = new TimeServerHandler();
 
 		try {
-			ServerBootstrap b = new ServerBootstrap(); // (2)
+			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
-					.channel(NioServerSocketChannel.class) // (3)
-					.childHandler(new ChannelInitializer<SocketChannel>() { // (4)
+					.channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
 							ch.pipeline().addLast(serverHandler);
 						}
 					})
-					.option(ChannelOption.SO_BACKLOG, 128)          // (5)
-					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
+					.option(ChannelOption.SO_BACKLOG, 128)
+					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 			// Bind and start to accept incoming connections.
-			ChannelFuture f = b.bind(port).sync(); // (7)
+			ChannelFuture f = b.bind(port).sync();
 
 			// Wait until the server socket is closed.
 			// In this example, this does not happen, but you can do that to gracefully
