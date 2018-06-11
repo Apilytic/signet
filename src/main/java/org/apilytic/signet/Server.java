@@ -20,8 +20,8 @@ public class Server {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-//		DiscardServerHandler serverHandler = new DiscardServerHandler();
-		TimeServerHandler serverHandler = new TimeServerHandler();
+		DiscardServerHandler serverHandler = new DiscardServerHandler();
+//		TimeServerHandler serverHandler = new TimeServerHandler();
 
 		try {
 			ServerBootstrap b = new ServerBootstrap();
