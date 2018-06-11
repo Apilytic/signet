@@ -9,10 +9,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-public class DiscardServer {
+public class Server {
 	private int port;
 
-	public DiscardServer(int port) {
+	public Server(int port) {
 		this.port = port;
 	}
 
@@ -56,6 +56,6 @@ public class DiscardServer {
 		} else {
 			port = 8080;
 		}
-		new DiscardServer(port).run();
+		new Server(port).run();
 	}
 }
