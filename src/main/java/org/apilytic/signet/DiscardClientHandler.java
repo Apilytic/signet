@@ -9,7 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class DiscardClientHandler extends SimpleChannelInboundHandler<Object> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-		// Server is supposed to send nothing, but if it sends something, discard it.
+		// TimeServer is supposed to send nothing, but if it sends something, discard it.
 	}
 
 	private ByteBuf content;
