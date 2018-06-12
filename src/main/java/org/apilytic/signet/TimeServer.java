@@ -9,10 +9,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-public class Server {
+public class TimeServer {
 	private int port;
 
-	public Server(int port) {
+	public TimeServer(int port) {
 		this.port = port;
 	}
 
@@ -20,8 +20,7 @@ public class Server {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-		DiscardServerHandler serverHandler = new DiscardServerHandler();
-//		TimeServerHandler serverHandler = new TimeServerHandler();
+		TimeServerHandler serverHandler = new TimeServerHandler();
 
 		try {
 			ServerBootstrap b = new ServerBootstrap();
@@ -56,6 +55,6 @@ public class Server {
 		} else {
 			port = 8080;
 		}
-		new Server(port).run();
+		new TimeServer(port).run();
 	}
 }
