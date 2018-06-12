@@ -1,61 +1,55 @@
 package org.apilytic.signet;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
+
+import java.net.InetSocketAddress;
 
 public class EchoServer {
-	static final boolean SSL = System.getProperty("ssl") != null;
-	static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
+	private final int port;
 
-	public static void main(String[] args) throws Exception {
-		// Configure SSL.
-		final SslContext sslCtx;
-		if (SSL) {
-			SelfSignedCertificate ssc = new SelfSignedCertificate();
-			sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-		} else {
-			sslCtx = null;
+	public EchoServer(int port) {
+		this.port = port;
+	}
+
+	public static void main(String[] args)
+			throws Exception {
+		if (args.length != 1) {
+			System.err.println("Usage: " + EchoServer.class.getSimpleName() +
+					" <port>"
+			);
+			return;
 		}
+		int port = Integer.parseInt(args[0]);
+		new EchoServer(port).start();
+	}
 
-		// Configure the server.
-		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
+	public void start() throws Exception {
 		final EchoServerHandler serverHandler = new EchoServerHandler();
+		EventLoopGroup group = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup)
+			b.group(group)
 					.channel(NioServerSocketChannel.class)
-					.option(ChannelOption.SO_BACKLOG, 100)
-					.handler(new LoggingHandler(LogLevel.INFO))
+					.localAddress(new InetSocketAddress(port))
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
-							ChannelPipeline p = ch.pipeline();
-							if (sslCtx != null) {
-								p.addLast(sslCtx.newHandler(ch.alloc()));
-							}
-							p.addLast(new LoggingHandler(LogLevel.INFO));
-							p.addLast(serverHandler);
+							ch.pipeline().addLast(serverHandler);
 						}
 					});
 
-			// Start the server.
-			ChannelFuture f = b.bind(PORT).sync();
-
-			// Wait until the server socket is closed.
+			ChannelFuture f = b.bind().sync();
+			System.out.println(EchoServer.class.getName() +
+					" started and listening for connections on " + f.channel().localAddress());
 			f.channel().closeFuture().sync();
 		} finally {
-			// Shut down all event loops to terminate all threads.
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
+			group.shutdownGracefully().sync();
 		}
 	}
 }
