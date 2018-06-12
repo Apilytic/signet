@@ -14,13 +14,15 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		ByteBuf in = (ByteBuf) msg;
-		System.out.println(
-				"Server received: " + in.toString(CharsetUtil.UTF_8));
 
-		String wrapIn = in.toString(CharsetUtil.UTF_8);
-		String json = "{\"userId\": \"" + wrapIn + "\"}";
+		String payload = in.toString(CharsetUtil.UTF_8).replaceAll("\\s+","");
+		System.out.println("Server received (" + payload.length() + "): " + payload);
 
-		ctx.write(Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
+		String json = "{\"userId\": \"" + payload + "\"}";
+
+		if (!payload.isEmpty()) {
+			ctx.write(Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
+		}
 	}
 
 	@Override
