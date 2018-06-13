@@ -22,7 +22,7 @@ public class EchoClient {
 
 	public void start() throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
-		EchoClientHandler echoClientHandler = new EchoClientHandler();
+		final EchoClientHandler echoClientHandler = new EchoClientHandler();
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group)
