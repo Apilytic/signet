@@ -20,9 +20,9 @@ public class EchoClient {
 		this.port = port;
 	}
 
-	public void start()
-			throws Exception {
+	public void start() throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
+		EchoClientHandler echoClientHandler = new EchoClientHandler();
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group)
@@ -31,10 +31,8 @@ public class EchoClient {
 					.remoteAddress(new InetSocketAddress(host, port))
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
-						public void initChannel(SocketChannel ch)
-								throws Exception {
-							ch.pipeline().addLast(
-									new EchoClientHandler());
+						public void initChannel(SocketChannel ch) {
+							ch.pipeline().addLast(echoClientHandler);
 						}
 					});
 			ChannelFuture f = b.connect().sync();
