@@ -15,7 +15,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		ByteBuf in = (ByteBuf) msg;
 
-		String payload = in.toString(CharsetUtil.UTF_8).replaceAll("\\s","");
+		String payload = in.toString(CharsetUtil.UTF_8).replaceAll("\\s", "");
 		System.out.println("Server received (" + payload.length() + "): " + payload);
 
 		String json = "{\"userId\": \"" + payload + "\"}";
