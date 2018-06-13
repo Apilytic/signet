@@ -1,58 +1,60 @@
 package org.apilytic.signet;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
-public class EchoClient
-{
-	static final boolean SSL = System.getProperty("ssl") != null;
-	static final String HOST = System.getProperty("host", "127.0.0.1");
-	static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
-	static final int SIZE = Integer.parseInt(System.getProperty("size", "256"));
+import java.net.InetSocketAddress;
 
-	public static void main(String[] args) throws Exception {
-		// Configure SSL.git
-		final SslContext sslCtx;
-		if (SSL) {
-			sslCtx = SslContextBuilder.forClient()
-					.trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-		} else {
-			sslCtx = null;
-		}
+public class EchoClient {
+	private final String host;
+	private final int port;
 
-		// Configure the client.
+	public EchoClient(String host, int port) {
+		this.host = host;
+		this.port = port;
+	}
+
+	public void start()
+			throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 					.channel(NioSocketChannel.class)
 					.option(ChannelOption.TCP_NODELAY, true)
+					.remoteAddress(new InetSocketAddress(host, port))
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
-						public void initChannel(SocketChannel ch) throws Exception {
-							ChannelPipeline p = ch.pipeline();
-							if (sslCtx != null) {
-								p.addLast(sslCtx.newHandler(ch.alloc(), HOST, PORT));
-							}
-							//p.addLast(new LoggingHandler(LogLevel.INFO));
-							p.addLast(new EchoClientHandler());
+						public void initChannel(SocketChannel ch)
+								throws Exception {
+							ch.pipeline().addLast(
+									new EchoClientHandler());
 						}
 					});
-
-			// Start the client.
-			ChannelFuture f = b.connect(HOST, PORT).sync();
-
-			// Wait until the connection is closed.
+			ChannelFuture f = b.connect().sync();
 			f.channel().closeFuture().sync();
 		} finally {
-			// Shut down the event loop to terminate all threads.
-			group.shutdownGracefully();
+			group.shutdownGracefully().sync();
 		}
+	}
+
+	public static void main(String[] args)
+			throws Exception {
+		if (args.length != 2) {
+			System.err.println("Usage: " + EchoClient.class.getSimpleName() +
+					" <host> <port>"
+			);
+			return;
+		}
+
+		final String host = args[0];
+		final int port = Integer.parseInt(args[1]);
+		new EchoClient(host, port).start();
 	}
 }
