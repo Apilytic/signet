@@ -3,39 +3,27 @@ package org.apilytic.signet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.CharsetUtil;
 
-public class EchoClientHandler extends ChannelInboundHandlerAdapter {
-	private final ByteBuf firstMessage;
+import java.util.UUID;
 
-	/**
-	 * Creates a client-side handler.
-	 */
-	public EchoClientHandler() {
-		firstMessage = Unpooled.buffer(EchoClient.SIZE);
-		for (int i = 0; i < firstMessage.capacity(); i++) {
-			firstMessage.writeByte((byte) i);
-		}
-	}
-
+public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		ctx.writeAndFlush(firstMessage);
+		ctx.writeAndFlush(Unpooled.copiedBuffer(UUID.randomUUID().toString(),
+				CharsetUtil.UTF_8));
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		ctx.write(msg);
+	public void channelRead0(ChannelHandlerContext ctx, ByteBuf in) {
+		System.out.println(
+				"Client received: " + in.toString(CharsetUtil.UTF_8));
 	}
 
 	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) {
-		ctx.flush();
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		// Close the connection when an exception is raised.
+	public void exceptionCaught(ChannelHandlerContext ctx,
+								Throwable cause) {
 		cause.printStackTrace();
 		ctx.close();
 	}
