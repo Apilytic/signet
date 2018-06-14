@@ -1,5 +1,6 @@
 package org.apilytic.signet;
 
+import io.netty.annotation.SimpleChannelInbound;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -10,7 +11,8 @@ import io.netty.util.CharsetUtil;
 import java.util.UUID;
 
 @Sharable
-public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+@SimpleChannelInbound(ByteBuf.class)
+public class EchoClientHandler {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
 		ctx.writeAndFlush(Unpooled.copiedBuffer(UUID.randomUUID().toString(),
