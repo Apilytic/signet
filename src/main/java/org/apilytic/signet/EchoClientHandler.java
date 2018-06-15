@@ -11,8 +11,9 @@ import io.netty.util.CharsetUtil;
 import java.util.UUID;
 
 @Sharable
-@SimpleChannelInbound(ByteBuf.class)
-public class EchoClientHandler {
+@SimpleChannelInbound
+public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
 		ctx.writeAndFlush(Unpooled.copiedBuffer(UUID.randomUUID().toString(),
