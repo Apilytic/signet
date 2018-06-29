@@ -34,8 +34,7 @@ public class EchoClient {
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) {
-							ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
-							ch.pipeline().addLast(echoClientHandler);
+							ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO), echoClientHandler);
 						}
 					});
 			ChannelFuture f = b.connect().sync();
