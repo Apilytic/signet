@@ -24,7 +24,10 @@ public class EchoClient {
 
 	public void start() throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
+
+		final LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
 		final EchoClientHandler echoClientHandler = new EchoClientHandler();
+
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group)
@@ -34,7 +37,7 @@ public class EchoClient {
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) {
-							ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO), echoClientHandler);
+							ch.pipeline().addLast(loggingHandler, echoClientHandler);
 						}
 					});
 			ChannelFuture f = b.connect().sync();
