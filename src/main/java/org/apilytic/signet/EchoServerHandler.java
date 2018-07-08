@@ -23,6 +23,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 		if (!payload.isEmpty()) {
 			ctx.write(Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
 		}
+
+		in.clear();
 	}
 
 	@Override
