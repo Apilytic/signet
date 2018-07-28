@@ -24,6 +24,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 			ctx.write(Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
 		}
 
+		in.release();
 		in.clear();
 	}
 
